@@ -1,20 +1,57 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
 
-export default function App() {
+import { createNativeStackNavigator, } from '@react-navigation/native-stack';
+import { Entypo } from '@expo/vector-icons'; 
+import { AuthProvider, useAuth } from './app/contexts/AuthContext';
+import HomeScreen from './app/screens/HomeScreen';
+import LoginScreen from './app/screens/LoginScreen';
+import DetailsScreen from './app/screens/DetailsScreen';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import CustomTabBar from './app/components/CustomTabBar';
+import AboutScreen from './app/screens/AboutScreen';
+// ... diğer ekranlarınız için importlar
+
+const AuthStack = createNativeStackNavigator();
+const AppStack = createBottomTabNavigator();
+
+const AuthStackScreen = () => (
+  <AuthStack.Navigator>
+    <AuthStack.Screen name="Login" component={LoginScreen} />
+    {/* Buraya diğer kimlik doğrulama ekranlarınızı ekleyebilirsiniz */}
+  </AuthStack.Navigator>
+);
+
+const AppStackScreen = () => (
+  <AppStack.Navigator tabBar={(props) => <CustomTabBar {...props} />}>
+    <AppStack.Screen  name="Home" 
+         component={HomeScreen}
+         options={{
+          tabBarIcon: ({ color, size }) => (
+            <Entypo name="home" size={24} color="black" />
+          ),
+        }} />
+
+    <AppStack.Screen name="Details" component={DetailsScreen} />
+    <AppStack.Screen name="About" component={AboutScreen} />
+    {/* Buraya uygulamanın diğer ana ekranlarını ekleyebilirsiniz */}
+  </AppStack.Navigator>
+);
+
+const App: React.FC = () => {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <AuthProvider>
+      <NavigationContainer>
+        <RootNavigator />
+      </NavigationContainer>
+    </AuthProvider>
   );
-}
+};
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+const RootNavigator: React.FC = () => {
+  const { authState } = useAuth();
+
+  return authState?.authenticated ? <AppStackScreen /> : <AuthStackScreen />;
+};
+
+export default App;
