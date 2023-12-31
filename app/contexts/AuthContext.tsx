@@ -1,16 +1,18 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
 interface AuthProps {
   authState?: { accessToken: string | null; refreshToken: string | null;authenticated: boolean | null };
   onRegister?: (nameSurname: string, userName: string,email: string, password: string,passwordConfirm: string) => Promise<any>;
   onLogin?: (email: string, password: string) => Promise<any>;
+  onGoogleLogin?: (idToken: string | null) => Promise<any>;
   onLogout?: () => Promise<any>;
 }
 
 const TOKEN_KEY = 'my-jwt';
-export const API_URL = 'https://d567-31-223-52-203.ngrok-free.app' ;
+export const API_URL = 'https://b750-31-223-52-203.ngrok-free.app';
 const AuthContext = createContext<AuthProps>({});
 
 // AuthProvider bileşeni ile context için bir value sağlıyoruz ve çocuk bileşenleri sarmalıyoruz
@@ -76,6 +78,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }>= ({ children 
       console.log(e);
     }
   };
+  const onGoogleLogin = async (idToken: string | null) => {
+    try {
+      console.log("in googlelogin")
+      const result = await axios.post(`${API_URL}/api/Auth/google-login`, {
+        idToken: idToken, // Kullanıcının gerçek adı veya e-posta adresi buraya
+      });
+      console.log("result:", result.data);
+
+      setAuthState({
+        accessToken: result.data.token.accessToken,
+        refreshToken:result.data.token.refreshToken,
+        authenticated: true
+      });
+      
+      axios.defaults.headers.common['Authorization'] = `Bearer ${result.data.token.accessToken}`
+      await SecureStore.setItemAsync(TOKEN_KEY,result.data.token.accessToken)
+
+      console.log(authState);
+      return result;
+    } catch (e) {
+      console.log(e);
+    }
+  };
   
 
   const onLogout = async () => {
@@ -87,10 +112,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }>= ({ children 
       refreshToken:null,
       authenticated: false
     });
+
+
+    //google ile girdiyse ->
+    GoogleSignin?.revokeAccess();
+    GoogleSignin?.signOut();
   };
 
   return (
-    <AuthContext.Provider value={{ authState, onRegister, onLogin, onLogout }}>
+    <AuthContext.Provider value={{ authState, onRegister, onLogin, onLogout,onGoogleLogin }}>
       {children}
     </AuthContext.Provider>
   );
