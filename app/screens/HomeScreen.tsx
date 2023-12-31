@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, Button, StyleSheet } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { useAuth } from '../contexts/AuthContext';
 
 type AuthStackParamList = {
     Home: undefined; // Diğer ekranlarınız için ek parametreler tanımlayabilirsiniz
@@ -17,6 +18,25 @@ type Props = {
 
 
 const HomeScreen: React.FC<Props> = ({ navigation }) => {
+  const { onLogout} = useAuth();
+
+  React.useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <Button
+          onPress={() => logoutFunction()}
+          title="Çıkış Yap"
+          color="#000" // Burada istediğiniz renk kodunu kullanabilirsiniz.
+        />
+      ),
+    });
+  }, [navigation]);
+  const logoutFunction = async () => {
+    // Çıkış yapma işlemlerinizi burada gerçekleştirin.
+    console.log('Çıkış yapılıyor...');
+    await onLogout!();
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Ana Sayf a a</Text>

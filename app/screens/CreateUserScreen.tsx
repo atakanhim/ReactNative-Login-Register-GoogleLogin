@@ -4,17 +4,17 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { useAuth } from '../contexts/AuthContext';
 
 type AuthStackParamList = {
-    Login: undefined; // Diğer ekranlarınız için ek parametreler tanımlayabilirsiniz
+    CreateUser: undefined; // Diğer ekranlarınız için ek parametreler tanımlayabilirsiniz
     // Örneğin: Home: { userId: string };
   };
 type LoginScreenNavigationProp = StackNavigationProp<
   AuthStackParamList,
-  'Login'
+  'CreateUser'
 >;
 type Props = {
     navigation: LoginScreenNavigationProp;
   };
-const LoginScreen: React.FC<Props> = ({ navigation }) => {
+const CreateUserScreen: React.FC<Props> = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const { onLogin,onRegister} = useAuth();
@@ -24,12 +24,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
     const result = await onLogin!(email,password);
     console.log("login screen : ",result );
   };
-  const handleCreateUser = () => {
 
-  }
-  const handleGoogleLogin = () => {
-
-  }
   return (
     <View style={styles.container}>
       <TextInput
@@ -46,12 +41,6 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
         onChangeText={setPassword}
       />
       <Button title="Giriş Yap" onPress={handleLogin} />
-      <Button title="Kullanıcı Oluştur" onPress={handleCreateUser} />
-      <Button
-        title="Google ile Giriş Yap"
-        onPress={handleGoogleLogin}
-       
-      />
     </View>
   );
 };
@@ -73,4 +62,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default LoginScreen;
+export default CreateUserScreen;

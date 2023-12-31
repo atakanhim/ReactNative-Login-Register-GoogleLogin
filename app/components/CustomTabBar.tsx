@@ -4,7 +4,7 @@ import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 
 const CustomTabBar: React.FC<BottomTabBarProps> = ({ state, descriptors, navigation }) => {
   return (
-    <View style={{ flexDirection: 'row', height: 60 }}>
+    <View style={styles.tabBar}>
       {state.routes.map((route, index) => {
         const { options } = descriptors[route.key];
         const label:any =
@@ -29,10 +29,14 @@ const CustomTabBar: React.FC<BottomTabBarProps> = ({ state, descriptors, navigat
         };
 
         return (
-          <TouchableOpacity key={route.key} onPress={onPress} style={{ flex: 1 }}>
-            <Text style={{ color: isFocused ? 'purple' : 'black' }}>
-              {label}
-            </Text>
+          <TouchableOpacity
+          style={isFocused ? styles.tabItemFocused : styles.tabItem}
+          onPress={onPress}
+          key={route.key}
+        >
+           <Text style={isFocused ? styles.textFocused : styles.text}>
+            {label}
+          </Text>
           </TouchableOpacity>
         );
       })}
@@ -43,18 +47,53 @@ const CustomTabBar: React.FC<BottomTabBarProps> = ({ state, descriptors, navigat
 };
 
 const styles = StyleSheet.create({
-    tabContainer: {
-      flexDirection: 'row',
-      justifyContent: 'space-around',
-      backgroundColor: '#fff',
-      borderTopWidth: 1,
-      borderTopColor: '#ddd',
-    },
-    tab: {
-      flex: 1,
-      alignItems: 'center',
-      padding: 10,
-    },
-    // İkon ve metin için ek stil tanımlamaları...
-  });
+  // Tab Bar Container
+  tabBar: {
+    flexDirection: 'row',
+    height: 60,
+    backgroundColor: '#fff',
+    // Diğer stil özellikleri...
+  },
+  // Normal Tab
+  tabItem: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    // Diğer stil özellikleri...
+  },
+  // Aktif Tab
+  tabItemFocused: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#e0d7ff', // Örnek bir arka plan rengi
+    borderRadius: 30, // Yuvarlak köşeler için
+    margin: 5, // Etrafındaki boşluk için
+    // Diğer stil özellikleri...
+  },
+  // Aktif Tab Alt Çizgisi
+  activeTabHighlight: {
+    position: 'absolute',
+    height: 4,
+    backgroundColor: 'purple',
+    bottom: 0,
+    // Çizginin boyutunu ve konumunu ayarlayın...
+  },
+  // İkon ve Metin
+  icon: {
+    // İkon için stil özellikleri...
+  },
+  iconFocused: {
+    // Aktif ikon için stil özellikleri...
+  },
+  text: {
+    // Metin için stil özellikleri...
+  },
+  textFocused: {
+    fontWeight: 'bold',
+    // Aktif metin için diğer stil özellikleri...
+  },
+});
+
+
 export default CustomTabBar;

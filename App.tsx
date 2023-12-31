@@ -10,6 +10,7 @@ import DetailsScreen from './app/screens/DetailsScreen';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import CustomTabBar from './app/components/CustomTabBar';
 import AboutScreen from './app/screens/AboutScreen';
+import CreateUserScreen from './app/screens/CreateUserScreen';
 // ... diğer ekranlarınız için importlar
 
 const AuthStack = createNativeStackNavigator();
@@ -18,6 +19,7 @@ const AppStack = createBottomTabNavigator();
 const AuthStackScreen = () => (
   <AuthStack.Navigator>
     <AuthStack.Screen name="Login" component={LoginScreen} />
+     <AuthStack.Screen name="CreateUser" component={CreateUserScreen} />
     {/* Buraya diğer kimlik doğrulama ekranlarınızı ekleyebilirsiniz */}
   </AuthStack.Navigator>
 );

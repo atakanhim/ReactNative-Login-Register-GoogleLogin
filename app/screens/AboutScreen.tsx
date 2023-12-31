@@ -16,7 +16,7 @@ type Props = {
 const DetailsScreen: React.FC<Props> = ({ navigation }) => {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Ana Sayfa</Text>
+      <Text style={styles.title}>About Sayfa</Text>
       {/* İçerik ve diğer bileşenler burada yer alabilir */}
     </View>
   );
