@@ -1,32 +1,50 @@
 import React, { useState } from 'react';
 import { View, TextInput, Button, StyleSheet } from 'react-native';
-import { StackNavigationProp } from '@react-navigation/stack';
 import { useAuth } from '../contexts/AuthContext';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 type AuthStackParamList = {
     CreateUser: undefined; // Diğer ekranlarınız için ek parametreler tanımlayabilirsiniz
+    LoginScreen: undefined;
     // Örneğin: Home: { userId: string };
   };
-type LoginScreenNavigationProp = StackNavigationProp<
-  AuthStackParamList,
-  'CreateUser'
->;
-type Props = {
-    navigation: LoginScreenNavigationProp;
-  };
-const CreateUserScreen: React.FC<Props> = ({ navigation }) => {
+  
+type Props = NativeStackScreenProps<AuthStackParamList, 'CreateUser'>;
+
+  
+const CreateUserScreen: React.FC<any> = ({ navigation ,route}) => {
+  const [nameSurname, setNameSurname] = useState('');
+  const [userName, setUserName] = useState('');
   const [email, setEmail] = useState('');
+
   const [password, setPassword] = useState('');
-  const { onLogin,onRegister} = useAuth();
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const { onRegister} = useAuth();
 
-  const handleLogin = async () => {
-    console.log("step 1");
-    const result = await onLogin!(email,password);
-    console.log("login screen : ",result );
-  };
 
+  
+  const handleCreate = async () => {
+    const result = await onRegister!(nameSurname,userName,email,password,confirmPassword);
+    console.log(result.message);// hatayi ekrana verme
+    if(result.succeeded){
+      navigation.navigate("LoginScreen",{message:"Kullanici ekleme islemi basarili"});
+    }
+  
+  }
   return (
     <View style={styles.container}>
+       <TextInput
+        style={styles.input}
+        placeholder="Ad Soyad"
+        value={nameSurname}
+        onChangeText={setNameSurname}
+      /> 
+      <TextInput
+      style={styles.input}
+      placeholder="Kullanici Adi"
+      value={userName}
+      onChangeText={setUserName}
+    />
       <TextInput
         style={styles.input}
         placeholder="Email"
@@ -40,7 +58,16 @@ const CreateUserScreen: React.FC<Props> = ({ navigation }) => {
         secureTextEntry
         onChangeText={setPassword}
       />
-      <Button title="Giriş Yap" onPress={handleLogin} />
+        
+   
+            <TextInput
+        style={styles.input}
+        placeholder="Şifre Tekrar"
+        value={confirmPassword}
+        secureTextEntry
+        onChangeText={setConfirmPassword}
+      />
+      <Button title="Üye Ol" onPress={handleCreate} />
     </View>
   );
 };

@@ -12,7 +12,7 @@ interface AuthProps {
 }
 
 const TOKEN_KEY = 'my-jwt';
-export const API_URL = 'https://b750-31-223-52-203.ngrok-free.app';
+export const API_URL = 'https://194c-31-223-56-58.ngrok-free.app/api';
 const AuthContext = createContext<AuthProps>({});
 
 // AuthProvider bileşeni ile context için bir value sağlıyoruz ve çocuk bileşenleri sarmalıyoruz
@@ -46,9 +46,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }>= ({ children 
 
   const onRegister = async (nameSurname: string, userName: string,email: string, password: string,passwordConfirm: string) => {
     try {
-      return await axios.post(`${API_URL}/user/create`, { nameSurname,userName,email, password,passwordConfirm });      
+      const result =  await axios.post(`${API_URL}/users/create`, { nameSurname,userName,email, password,passwordConfirm });    
+      return result.data;
     } catch (e) {
-      return { error: true, msg: (e as any).response.data.msg };
+      console.log(e);
     }
 
   };
@@ -56,7 +57,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }>= ({ children 
   const onLogin = async (email: string, password: string) => {
     try {
 
-      const result = await axios.post(`${API_URL}/api/Auth/Login`, {
+      const result = await axios.post(`${API_URL}/Auth/Login`, {
         usernameOrEmail: email, // Kullanıcının gerçek adı veya e-posta adresi buraya
         password: password // Gerçek şifre buraya
       });
@@ -71,8 +72,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }>= ({ children 
       axios.defaults.headers.common['Authorization'] = `Bearer ${result.data.token.accessToken}`
 
       await SecureStore.setItemAsync(TOKEN_KEY,result.data.token.accessToken)
-      console.log(authState);
-
       return result;
     } catch (e) {
       console.log(e);
@@ -80,8 +79,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }>= ({ children 
   };
   const onGoogleLogin = async (idToken: string | null) => {
     try {
-      console.log("in googlelogin")
-      const result = await axios.post(`${API_URL}/api/Auth/google-login`, {
+
+      const result = await axios.post(`${API_URL}/Auth/google-login`, {
         idToken: idToken, // Kullanıcının gerçek adı veya e-posta adresi buraya
       });
       console.log("result:", result.data);
@@ -95,7 +94,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }>= ({ children 
       axios.defaults.headers.common['Authorization'] = `Bearer ${result.data.token.accessToken}`
       await SecureStore.setItemAsync(TOKEN_KEY,result.data.token.accessToken)
 
-      console.log(authState);
       return result;
     } catch (e) {
       console.log(e);
@@ -114,9 +112,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }>= ({ children 
     });
 
 
-    //google ile girdiyse ->
-    GoogleSignin?.revokeAccess();
-    GoogleSignin?.signOut();
+    //google ile girdiyse -
+    const isSignedIn = await GoogleSignin.isSignedIn();
+    if(isSignedIn){
+      GoogleSignin.revokeAccess();
+      GoogleSignin.signOut();
+    }
+   
   };
 
   return (
